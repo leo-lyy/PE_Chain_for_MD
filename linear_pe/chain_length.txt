@@ -1,0 +1,27 @@
+the first number N is the number of linear PE chains, the next N numbers are the length of every PE chain
+25
+100
+100
+100
+100
+100
+200
+200
+200
+200
+200
+400
+400
+400
+400
+400
+500
+500
+500
+500
+500
+50
+50
+50
+50
+50
