@@ -1,0 +1,17 @@
+LAMMPS (23 Jun 2022 - Update 3)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+package omp 0
+using multi-threaded neighbor list subroutines
+package omp 2
+set 2 OpenMP thread(s) per MPI task
+using multi-threaded neighbor list subroutines
+# VARIABLES
+variable simname index branchtest
+
+# Initialization
+units		real
+boundary	p p p
+atom_style	molecular
+log 		log.${simname}.txt
+log 		log.branchtest.txt

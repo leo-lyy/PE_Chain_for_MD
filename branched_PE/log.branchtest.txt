@@ -1,0 +1,173 @@
+read_data 	fcc_unwrapped_coordinate.dat
+Reading data file ...
+  orthogonal box = (0 0 0) to (43.28 43.28 43.28)
+  1 by 2 by 2 MPI processor grid
+  reading atoms ...
+  376 atoms
+  scanning bonds ...
+  2 = max bonds/atom
+  scanning angles ...
+  3 = max angles/atom
+  scanning dihedrals ...
+  3 = max dihedrals/atom
+  reading bonds ...
+  367 bonds
+  reading angles ...
+  369 angles
+  reading dihedrals ...
+  371 dihedrals
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0       
+  special bond factors coul:  0        0        0       
+     3 = max # of 1-2 neighbors
+     3 = max # of 1-3 neighbors
+     6 = max # of 1-4 neighbors
+     9 = max # of special neighbors
+  special bonds CPU = 0.001 seconds
+  read_data CPU = 0.034 seconds
+
+# Dreiding potential information
+neighbor	0.4 bin
+neigh_modify	delay 0 every 5 check yes
+bond_style      harmonic
+bond_coeff	1 350 1.53
+angle_style     harmonic
+angle_coeff	1 60 109.5
+dihedral_style	multi/harmonic
+dihedral_coeff	1 1.73 -4.49 0.776 6.99 0.0
+pair_style	lj/cut 10.5
+pair_coeff	1 1 0.112 4.01 10.5
+
+#####################################################
+# Equilibration Stage 1 (Langevin dynamics at 500 K)
+velocity 	all create 500.0 1231
+fix		1 all nve/limit 0.05
+fix		2 all langevin 500.0 500.0 10.0 904297
+thermo_style	custom step temp press
+thermo          500
+timestep	1
+run		10000
+Generated 0 of 0 mixed pair_coeff terms from geometric mixing rule
+Last active /omp style is dihedral_style multi/harmonic/omp
+Neighbor list info ...
+  update every 5 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 10.9
+  ghost atom cutoff = 10.9
+  binsize = 5.45, bins = 8 8 8
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut/omp, perpetual
+      attributes: half, newton on, omp
+      pair build: half/bin/newton/omp
+      stencil: half/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 9.224 | 9.341 | 9.679 Mbytes
+   Step          Temp          Press     
+         0   500            21066496     
+       500   458.48198      360.1154     
+      1000   506.80131      156.3941     
+      1500   497.91698      559.50176    
+      2000   532.51507      209.19086    
+      2500   523.82995      33.095268    
+      3000   478.74052     -129.52184    
+      3500   488.18904     -198.42761    
+      4000   474.9641       179.27832    
+      4500   503.69532      366.82242    
+      5000   484.87635      510.62119    
+      5500   464.25948     -18.945481    
+      6000   523.01277      337.59046    
+      6500   535.1737       72.003681    
+      7000   508.05195     -194.71166    
+      7500   497.63832      50.489611    
+      8000   513.23138      123.65806    
+      8500   531.70224      442.65448    
+      9000   496.74452      371.5663     
+      9500   513.58155     -47.173092    
+     10000   504.59576      106.70135    
+Loop time of 1.42609 on 8 procs for 10000 steps with 376 atoms
+
+Performance: 605.853 ns/day, 0.040 hours/ns, 7012.191 timesteps/s
+196.6% CPU use with 4 MPI tasks x 2 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.088301   | 0.16882    | 0.29869    |  19.6 | 11.84
+Bond    | 0.10326    | 0.13239    | 0.17718    |   7.6 |  9.28
+Neigh   | 0.15687    | 0.15925    | 0.16292    |   0.6 | 11.17
+Comm    | 0.63358    | 0.80519    | 0.92657    |  11.9 | 56.46
+Output  | 0.00033306 | 0.0053756  | 0.020347   |  11.8 |  0.38
+Modify  | 0.10215    | 0.11829    | 0.1318     |   3.8 |  8.29
+Other   |            | 0.03677    |            |       |  2.58
+
+Nlocal:             94 ave         150 max          64 min
+Histogram: 2 0 0 1 0 0 0 0 0 1
+Nghost:          571.5 ave         604 max         513 min
+Histogram: 1 0 0 0 0 0 1 0 0 2
+Neighs:           2593 ave        4874 max        1249 min
+Histogram: 1 1 0 1 0 0 0 0 0 1
+
+Total # of neighbors = 10372
+Ave neighs/atom = 27.585106
+Ave special neighs/atom = 5.8882979
+Neighbor list builds = 680
+Dangerous builds = 10
+unfix 1
+unfix 2
+
+
+#####################################################
+# Equilibration Stage 2 (1ns NPT dynamics at 500 K)
+fix		1 all npt temp 500.0 500.0 50 iso 0 0 1000 drag 2
+fix  		2 all momentum 1 linear 1 1 1
+thermo          1000
+timestep	1
+reset_timestep	0
+run		10000
+Generated 0 of 0 mixed pair_coeff terms from geometric mixing rule
+Last active /omp style is dihedral_style multi/harmonic/omp
+Per MPI rank memory allocation (min/avg/max) = 9.224 | 9.342 | 9.683 Mbytes
+   Step          Temp          Press     
+         0   504.59576      106.70135    
+      1000   505.63489     -400.35582    
+      2000   499.36696      129.5087     
+      3000   500.4597      -173.06812    
+      4000   512.05619      5.6775519    
+      5000   515.75571      21.711745    
+      6000   476.70256      28.215933    
+      7000   504.91805      84.622943    
+      8000   491.18533     -246.64181    
+      9000   507.58615     -81.125188    
+     10000   492.87013      58.23899     
+Loop time of 1.55627 on 8 procs for 10000 steps with 376 atoms
+
+Performance: 555.175 ns/day, 0.043 hours/ns, 6425.631 timesteps/s
+195.3% CPU use with 4 MPI tasks x 2 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.14736    | 0.18778    | 0.25825    |   9.8 | 12.07
+Bond    | 0.15181    | 0.16497    | 0.19974    |   4.9 | 10.60
+Neigh   | 0.11194    | 0.11298    | 0.11456    |   0.3 |  7.26
+Comm    | 0.40289    | 0.49473    | 0.53488    |   7.6 | 31.79
+Output  | 0.00013624 | 0.0016033  | 0.006001   |   6.3 |  0.10
+Modify  | 0.55824    | 0.57196    | 0.58951    |   1.7 | 36.75
+Other   |            | 0.02225    |            |       |  1.43
+
+Nlocal:             94 ave         118 max          78 min
+Histogram: 2 0 0 0 0 1 0 0 0 1
+Nghost:            571 ave         591 max         545 min
+Histogram: 1 0 0 1 0 0 0 0 0 2
+Neighs:           2977 ave        4904 max        2002 min
+Histogram: 1 1 1 0 0 0 0 0 0 1
+
+Total # of neighbors = 11908
+Ave neighs/atom = 31.670213
+Ave special neighs/atom = 5.8882979
+Neighbor list builds = 857
+Dangerous builds = 0
+unfix 1
+unfix 2
+
+Total wall time: 0:00:03
