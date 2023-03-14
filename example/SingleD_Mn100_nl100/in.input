@@ -1,0 +1,117 @@
+# VARIABLES
+variable simname index SingleD_Mn100_cl100
+
+# Initialization
+units		real
+boundary	p p p
+atom_style	molecular
+log 		log.${simname}.txt
+read_data 	fcc_unwrapped_coordinate.dat
+
+# Dreiding potential information
+neighbor	0.4 bin
+neigh_modify	delay 0 every 5 check yes
+bond_style      harmonic
+bond_coeff	1 350 1.53
+angle_style     harmonic
+angle_coeff	1 60 109.5
+dihedral_style	multi/harmonic
+dihedral_coeff	1 1.73 -4.49 0.776 6.99 0.0
+pair_style	lj/cut 10.5
+pair_coeff	1 1 0.112 4.01 10.5
+
+#####################################################
+# Equilibration Stage 1 (Langevin dynamics at 500 K)
+velocity 	all create 500.0 1231
+fix		1 all nve/limit 0.05
+fix		2 all langevin 500.0 500.0 10.0 904297
+thermo_style	custom step temp press
+thermo          50000
+timestep	1
+run		1000000
+unfix 1
+unfix 2
+write_restart 	restart.${simname}.dreiding1
+
+
+#####################################################
+# Equilibration Stage 2 (1ns NPT dynamics at 500 K)
+fix		1 all npt temp 500.0 500.0 50 iso 0 0 1000 drag 2
+fix  		2 all momentum 1 linear 1 1 1
+thermo          100000
+timestep	1
+reset_timestep	0
+run		1000000
+unfix 1
+unfix 2
+write_restart 	restart.1ns.${simname}.dreiding2
+
+#####################################################
+# Equilibration Stage 2 (MSD stastic, NPT dynamics at 500 K)
+fix		1 all npt temp 500.0 500.0 50 iso 0 0 1000 drag 2
+fix  		2 all momentum 1 linear 1 1 1
+dump		1 all custom 100 dump1.${simname}.atom id mol  xu yu zu
+thermo          1000
+timestep	1
+reset_timestep	0
+run		10000
+unfix 1
+unfix 2
+undump 1
+write_restart 	restart-0.01ns.${simname}.dreiding3
+
+#####################################################
+# Equilibration Stage 2 (MSD stastic,NPT dynamics at 500 K)
+fix		1 all npt temp 500.0 500.0 50 iso 0 0 1000 drag 2
+fix  		2 all momentum 1 linear 1 1 1
+dump		1 all custom 1000 dump2.${simname}.atom id mol  xu yu zu
+thermo          10000
+timestep	1
+run		90000
+unfix 1
+unfix 2
+undump 1
+write_restart 	restart-0.1ns.${simname}.dreiding3
+#####################################################
+# Equilibration Stage 2 (MSD stastic,NPT dynamics at 500 K)
+fix		1 all npt temp 500.0 500.0 50 iso 0 0 1000 drag 2
+neigh_modify	delay 0 every 2 check yes
+fix  		2 all momentum 1 linear 1 1 1
+dump		1 all custom 10000 dump3.${simname}.atom id mol  xu yu zu
+thermo          100000
+timestep	1
+run		900000
+unfix 1
+unfix 2
+undump 1
+write_restart 	restart-1ns.${simname}.dreiding3
+
+#####################################################
+# Equilibration Stage 2 (MSD stastic,NPT dynamics at 500 K)
+fix		1 all npt temp 500.0 500.0 50 iso 0 0 1000 drag 2
+fix  		2 all momentum 1 linear 1 1 1
+dump		1 all custom 100000 dump4.${simname}.atom id mol  xu yu zu
+thermo          1000000
+timestep	2
+run		9000000
+unfix 1
+unfix 2
+undump 1
+write_restart 	restart-10ns.${simname}.dreiding3
+
+#####################################################
+# Equilibration Stage 2 (MSD stastic,NPT dynamics at 500 K)
+fix		1 all npt temp 500.0 500.0 50 iso 0 0 1000 drag 2
+fix  		2 all momentum 1 linear 1 1 1
+dump		1 all custom 1000000 dump5.${simname}.atom id mol  xu yu zu
+thermo_style custom step temp press
+thermo          1000000
+timestep	2
+run		40000000
+unfix 1
+unfix 2
+undump 1
+write_restart 	restart-50ns.${simname}.dreiding3
+
+
+
